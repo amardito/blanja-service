@@ -1,0 +1,19 @@
+{
+  "name": "blanja-service",
+  "version": "1.0.0",
+  "description": "this repo can handle service for blanja",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "amardito",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.3.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1"
+  }
+}

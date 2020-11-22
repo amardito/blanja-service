@@ -1,11 +1,7 @@
 const express = require('express')
 const app = express.Router()
+const {newProduct} = require('../controller/product/command/product')
 
-app.all('*', (req,res) => {
-  res.status(200).json({
-    status: 'ok',
-    message: 'u found create endpoint'
-  })
-})
+app.post('/create', newProduct)
 
 module.exports = app

@@ -56,12 +56,18 @@ const updateProductId = async (req,res) => {
       ...payload.body,
       updated_at: new Date(Date.now())
   }
-  await updateProduct(payloads,id).then(() => {
+  await updateProduct(payloads,id).then((data) => {
     const resObject = {
       message: "success update product",
       data: { id: id, ...payload.body , updated_at: new Date(Date.now())},
     }
-    res.status(201).json(resObject)
+    if (data.affectedRows) {
+      res.status(201).json(resObject);
+    }else{
+      res.status(404).json({
+        message: "Data not Found",
+      });
+    }
   })
   .catch((err) => {
     res.status(400).json({
@@ -87,7 +93,6 @@ const deleteProductId = async (req,res) => {
         message: "Data not Found",
       });
     }
-    console.log(data.affectedRows)
   })
   .catch((err) => {
     res.status(400).json({

@@ -14,7 +14,7 @@ const search = async (req,res) => {
   if(name != undefined && category != undefined){
     res.status(500).json({
       status : "error",
-      message : "u cant find more column same time"
+      message : "u cant find more column at a same time"
     })
   }else{
 

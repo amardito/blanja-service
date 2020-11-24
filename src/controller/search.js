@@ -4,7 +4,7 @@ const search = async (req, res) => {
   const {
     name, category, sort,
   } = req.query;
-  let sortby = req.query;
+  let { sortby } = req.query;
   const searchName = `%${name}%`;
   const searchCategory = `%${category}%`;
 

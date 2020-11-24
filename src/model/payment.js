@@ -1,4 +1,4 @@
-const { db } = require('../../../../config/dbConnect');
+const { db } = require('../config/dbConnect');
 
 const createHistoryPay = (payload) => new Promise((resolve, reject) => {
   const qStr = 'INSERT INTO history_payment SET ?';

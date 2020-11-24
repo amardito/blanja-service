@@ -1,4 +1,4 @@
-const { db } = require('../../../../config/dbConnect');
+const { db } = require('../config/dbConnect');
 
 const getByName = (payload, sortBy, sort) => new Promise((resolve, reject) => {
   let qStr = '';

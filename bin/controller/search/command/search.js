@@ -1,19 +1,20 @@
 const { getByName, getByCategory } = require('../model/search');
 
 const search = async (req, res) => {
-  let {
-    name, category, sortby, sort,
+  const {
+    name, category, sort,
   } = req.query;
+  let sortby = req.query;
   const searchName = `%${name}%`;
   const searchCategory = `%${category}%`;
 
-  if (sortby == 'name') {
+  if (sortby === 'name') {
     sortby = 'product_name';
-  } else if (sortby == 'latest') {
+  } else if (sortby === 'latest') {
     sortby = 'created_at';
   }
 
-  if (name != undefined && category != undefined) {
+  if (name !== undefined && category !== undefined) {
     res.status(500).json({
       status: 'error',
       message: 'u cant find more column at a same time',

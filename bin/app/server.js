@@ -1,11 +1,12 @@
-const express = require('express').Router
-const app = new express()
+const Express = require('express').Router;
 
-app.post('*', (req,res) => {
+const app = new Express();
+
+app.post('*', (req, res) => {
   res.status(404).json({
-    status : 'false',
-    message : 'Endpoint not found'
-  })
-})
+    status: 'false',
+    message: 'Endpoint not found',
+  });
+});
 
-module.exports = app
+module.exports = app;

@@ -39,6 +39,6 @@ mysql_database = blanjadb
 
 ## documentation
 
-u can find it on postman link collection bellow
+you can find documentation on postman link collection bellow
 
 https://documenter.getpostman.com/view/9503318/TVewYPfj

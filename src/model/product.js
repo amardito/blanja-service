@@ -1,4 +1,4 @@
-const { db } = require('../config/dbConnect');
+const { db } = require('../../config/dbConnect');
 
 const createProduct = (payload) => new Promise((resolve, reject) => {
   const qStr = 'INSERT INTO products SET ?';

@@ -1,7 +1,7 @@
 const express = require('express');
 
 const app = express.Router();
-const { newPayment } = require('../controller/history_payment/command/payment');
+const { newPayment } = require('../controller/payment');
 
 app.post('/create', newPayment);
 

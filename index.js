@@ -2,10 +2,10 @@ const express = require('express');
 const logger = require('morgan');
 const config = require('config');
 
-const server = require('./bin/app/server');
-const product = require('./bin/app/product');
-const search = require('./bin/app/search');
-const historyPay = require('./bin/app/history_payment');
+const server = require('./src/routes/server');
+const product = require('./src/routes/product');
+const search = require('./src/routes/search');
+const historyPay = require('./src/routes/history_payment');
 
 const app = express();
 

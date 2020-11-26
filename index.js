@@ -1,6 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 const config = require('config');
+const cors = require('cors');
 
 const server = require('./src/routes/server');
 const product = require('./src/routes/product');
@@ -9,6 +10,7 @@ const historyPay = require('./src/routes/history_payment');
 
 const app = express();
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

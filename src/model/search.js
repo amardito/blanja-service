@@ -47,7 +47,6 @@ const getBy = ([payload1, payload2], sortBy, sort) => new Promise((resolve, reje
       resolve(data);
     } else {
       reject(err);
-      console.log(payload1 + payload2);
     }
   });
 });

@@ -5,9 +5,9 @@ const {
   newProduct, getProductId, updateProductId, deleteProductId,
 } = require('../controller/product');
 
-app.post('/create', newProduct);
-app.get('/:id', getProductId);
-app.put('/update/:id', updateProductId);
-app.delete('/delete/:id', deleteProductId);
+app.post('/product/create', newProduct);
+app.get('/product/:id', getProductId);
+app.put('/product/update/:id', updateProductId);
+app.delete('/product/delete/:id', deleteProductId);
 
 module.exports = app;

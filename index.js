@@ -13,9 +13,9 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(config.get('pathProductEndpoint'), product);
-app.use(config.get('pathSearchEndpoint'), search);
-app.use(config.get('pathHistoryPayEndpoint'), historyPay);
+app.use(config.get('pathEndpoint'), product);
+app.use(config.get('pathEndpoint'), search);
+app.use(config.get('pathEndpoint'), historyPay);
 app.use('/', server);
 
 app.listen(config.get('ports'), () => {

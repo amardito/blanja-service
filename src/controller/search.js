@@ -1,4 +1,4 @@
-const { getByName, getByCategory } = require('../model/search');
+const { getByName, getByCategory, getBy } = require('../model/search');
 
 const search = async (req, res) => {
   const {
@@ -15,10 +15,20 @@ const search = async (req, res) => {
   }
 
   if (name !== undefined && category !== undefined) {
-    res.status(500).json({
-      status: 'error',
-      message: 'u cant find more column at a same time',
-    });
+    await getBy([searchName, searchCategory], sortby, sort).then((data) => {
+      const resObject = {
+        status: 200,
+        data,
+      };
+      res.json(resObject);
+    })
+      .catch((err) => {
+        res.status(500).json({
+          status: 'error',
+          message: 'wrong query',
+          error: err,
+        });
+      });
   } else {
     if (name) {
       await getByName(searchName, sortby, sort).then((data) => {

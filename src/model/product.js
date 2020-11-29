@@ -44,9 +44,28 @@ const deleteProduct = (payload) => new Promise((resolve, reject) => {
   });
 });
 
+const getAll = (sortBy, sort) => new Promise((resolve, reject) => {
+  let qStr = '';
+
+  if (sortBy) {
+    qStr = `SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY ${sortBy} ${sort}`;
+  } else {
+    qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY created_at DESC';
+  }
+
+  db.query(qStr, (err, data) => {
+    if (!err) {
+      resolve(data);
+    } else {
+      reject(err);
+    }
+  });
+});
+
 module.exports = {
   createProduct,
   getProduct,
+  getAll,
   updateProduct,
   deleteProduct,
 };

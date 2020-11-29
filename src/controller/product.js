@@ -1,5 +1,5 @@
 const {
-  createProduct, getProduct, updateProduct, deleteProduct,
+  createProduct, getProduct, updateProduct, deleteProduct, getAll,
 } = require('../model/product');
 
 const newProduct = async (req, res) => {
@@ -35,7 +35,7 @@ const getProductId = async (req, res) => {
 
   await getProduct(id).then((data) => {
     if (data.length) {
-      res.status(201).json(data[0]);
+      res.status(200).json(data[0]);
     } else {
       res.status(404).json({
         message: 'Data not Found',
@@ -105,9 +105,41 @@ const deleteProductId = async (req, res) => {
     });
 };
 
+const getAllProducts = async (req, res) => {
+  const { sort } = req.query;
+  let { sortby } = req.query;
+
+  if (sortby === 'name') {
+    sortby = 'product_name';
+  } else if (sortby === 'latest') {
+    sortby = 'created_at';
+  }
+
+  await getAll(sortby, sort).then((data) => {
+    if (data.length) {
+      res.status(200).json({
+        message: 'success get data',
+        data,
+      });
+    } else {
+      res.status(404).json({
+        message: 'Data not Found',
+      });
+    }
+  })
+    .catch((err) => {
+      res.status(400).json({
+        status: 'error bad request',
+        message: err.sqlMessage,
+        error: err.sql,
+      });
+    });
+};
+
 module.exports = {
   newProduct,
   getProductId,
+  getAllProducts,
   updateProductId,
   deleteProductId,
 };

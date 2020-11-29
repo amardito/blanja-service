@@ -1,4 +1,6 @@
-const { getByName, getByCategory, getBy } = require('../model/search');
+const {
+  getByName, getByCategory, getBy, getCategory,
+} = require('../model/search');
 
 const search = async (req, res) => {
   const {
@@ -66,6 +68,24 @@ const search = async (req, res) => {
   }
 };
 
+const getAllCategory = async (req, res) => {
+  await getCategory().then((data) => {
+    const resObject = {
+      status: 200,
+      data,
+    };
+    res.json(resObject);
+  })
+    .catch((err) => {
+      res.status(500).json({
+        status: 'error',
+        message: 'wrong query',
+        error: err.sql,
+      });
+    });
+};
+
 module.exports = {
   search,
+  getAllCategory,
 };

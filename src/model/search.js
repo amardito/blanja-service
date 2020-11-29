@@ -52,7 +52,7 @@ const getBy = ([payload1, payload2], sortBy, sort) => new Promise((resolve, reje
 });
 
 const getCategory = () => new Promise((resolve, reject) => {
-  const qStr = 'SELECT id_category, category_name FROM category';
+  const qStr = 'SELECT * FROM category';
   db.query(qStr, (err, data) => {
     if (!err) {
       resolve(data);

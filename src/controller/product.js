@@ -113,6 +113,8 @@ const getAllProducts = async (req, res) => {
     sortby = 'product_name';
   } else if (sortby === 'latest') {
     sortby = 'created_at';
+  } else if (sortby === 'popular') {
+    sortby = 'product_sold';
   }
 
   await getAll(sortby, sort).then((data) => {

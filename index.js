@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const config = require('config');
 const cors = require('cors');
+const bp = require('body-parser');
 
 const server = require('./src/routes/server');
 const product = require('./src/routes/product');
@@ -11,9 +12,9 @@ const historyPay = require('./src/routes/history_payment');
 const app = express();
 
 app.use(cors());
-app.use(logger('dev'));
+app.use(bp.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(logger('dev'));
 
 app.use(config.get('pathEndpoint'), product);
 app.use(config.get('pathEndpoint'), search);

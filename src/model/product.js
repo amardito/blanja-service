@@ -12,7 +12,7 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const getProduct = (payload) => new Promise((resolve, reject) => {
-  const qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.created_at, p.updated_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id WHERE p.id_product = ?';
+  const qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id WHERE p.id_product = ?';
   db.query(qStr, payload, (err, data) => {
     if (!err) {
       resolve(data);
@@ -48,9 +48,9 @@ const getAll = (sortBy, sort) => new Promise((resolve, reject) => {
   let qStr = '';
 
   if (sortBy) {
-    qStr = `SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY ${sortBy} ${sort}`;
+    qStr = `SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY ${sortBy} ${sort}`;
   } else {
-    qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY created_at DESC';
+    qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY created_at DESC';
   }
 
   db.query(qStr, (err, data) => {

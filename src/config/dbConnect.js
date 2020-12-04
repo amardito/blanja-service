@@ -1,11 +1,14 @@
 const mySql = require('mysql');
-const config = require('config');
+
+const {
+  MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DATABASE,
+} = process.env;
 
 const db = mySql.createConnection({
-  host: config.get('dbHost'),
-  user: config.get('dbUser'),
-  password: config.get('dbPass'),
-  database: config.get('dbName'),
+  host: MYSQL_HOST,
+  user: MYSQL_USER,
+  password: MYSQL_PASS,
+  database: MYSQL_DATABASE,
 });
 
 db.connect((err) => {

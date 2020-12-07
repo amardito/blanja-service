@@ -64,29 +64,21 @@ const getAllProducts = async (req, res) => {
     sortby = 'product_name';
   } else if (sortby === 'latest') {
     sortby = 'created_at';
+  } else if (sortby === 'price') {
+    sortby = 'product_price';
   } else if (sortby === 'popular') {
     sortby = 'product_sold';
   }
 
   await getAll(sortby, sort).then((data) => {
     if (data.length) {
-      res.status(200).json({
-        message: 'success get data',
-        data,
-      });
+      wrapper.success(res, 'found a data', data, 200);
     } else {
-      res.status(404).json({
-        message: 'Data not Found',
-      });
+      wrapper.error(res, 'data not found', 'add some products', 404);
     }
-  })
-    .catch((err) => {
-      res.status(400).json({
-        status: 'error bad request',
-        message: err.sqlMessage,
-        error: err,
-      });
-    });
+  }).catch((err) => {
+    wrapper.error(res, 'bad request', err, 400);
+  });
 };
 
 module.exports = {

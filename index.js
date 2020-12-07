@@ -23,6 +23,7 @@ app.use(logger('dev'));
 app.use(PATH_ENDPOINT, product);
 app.use(PATH_ENDPOINT, search);
 app.use(PATH_ENDPOINT, historyPay);
+
 app.use('/', server);
 
 app.listen(PORT, () => {

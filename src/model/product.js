@@ -104,44 +104,6 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
     updated_at: new Date(Date.now()),
   };
 
-  if (payload.size_id !== undefined) {
-    const currSize = 'DELETE FROM product_size WHERE product_id = ?';
-    db.query(currSize, idParams);
-
-    const qStrSize = 'INSERT INTO product_size SET ?';
-    const sizeLen = payload.size_id.length;
-    for (let i = 0; i < sizeLen; i += 1) {
-      const sizeModel = {
-        product_id: idParams,
-        size_id: payload.size_id[i],
-      };
-      db.query(qStrSize, sizeModel, (err) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    }
-  }
-
-  if (payload.color_id !== undefined) {
-    const currColor = 'DELETE FROM product_color WHERE product_id = ?';
-    db.query(currColor, idParams);
-
-    const qStrColor = 'INSERT INTO product_color SET ?';
-    const colorLen = payload.color_id.length;
-    for (let i = 0; i < colorLen; i += 1) {
-      const colorModel = {
-        product_id: idParams,
-        color_id: payload.color_id[i],
-      };
-      db.query(qStrColor, colorModel, (err) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    }
-  }
-
   const qStr = `UPDATE products SET ? WHERE id_product = ${idParams}`;
   db.query(qStr, payloads, (err, data) => {
     if (!err) {
@@ -150,6 +112,60 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
       reject(err);
     }
   });
+
+  if (payload.size_id !== undefined) {
+    const currSize = 'DELETE FROM product_size WHERE product_id = ?';
+    db.query(currSize, idParams, (err, data) => {
+      if (!err) {
+        if (data.affectedRows) {
+          const qStrSize = 'INSERT INTO product_size SET ?';
+          const sizeLen = payload.size_id.length;
+          for (let i = 0; i < sizeLen; i += 1) {
+            const sizeModel = {
+              product_id: idParams,
+              size_id: payload.size_id[i],
+            };
+            db.query(qStrSize, sizeModel, (error) => {
+              if (error) {
+                reject(error);
+              }
+            });
+          }
+        } else {
+          resolve(data);
+        }
+      } else {
+        reject(err);
+      }
+    });
+  }
+
+  if (payload.color_id !== undefined) {
+    const currColor = 'DELETE FROM product_color WHERE product_id = ?';
+    db.query(currColor, idParams, (err, data) => {
+      if (!err) {
+        if (data.affectedRows) {
+          const qStrColor = 'INSERT INTO product_color SET ?';
+          const colorLen = payload.color_id.length;
+          for (let i = 0; i < colorLen; i += 1) {
+            const colorModel = {
+              product_id: idParams,
+              color_id: payload.color_id[i],
+            };
+            db.query(qStrColor, colorModel, (error) => {
+              if (error) {
+                reject(error);
+              }
+            });
+          }
+        } else {
+          resolve(data);
+        }
+      } else {
+        reject(err);
+      }
+    });
+  }
 });
 
 const deleteProduct = (payload) => new Promise((resolve, reject) => {
@@ -157,6 +173,12 @@ const deleteProduct = (payload) => new Promise((resolve, reject) => {
   db.query(qStr, payload, (err, data) => {
     if (!err) {
       resolve(data);
+
+      const currColor = 'DELETE FROM product_color WHERE product_id = ?';
+      db.query(currColor, payload);
+
+      const currSize = 'DELETE FROM product_size WHERE product_id = ?';
+      db.query(currSize, payload);
     } else {
       reject(err);
     }

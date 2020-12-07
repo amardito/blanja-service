@@ -32,7 +32,7 @@ const updateProductId = async (req, res) => {
   const payload = req.body;
 
   await updateProduct(payload, id).then((data) => {
-    if (data) {
+    if (data.affectedRows) {
       wrapper.success(res, 'sucess update product', { id, payload }, 201);
     } else {
       wrapper.error(res, 'cant find id', 'id\'s not found', 404);
@@ -46,25 +46,14 @@ const deleteProductId = async (req, res) => {
   const { id } = req.params;
 
   await deleteProduct(id).then((data) => {
-    const resObject = {
-      message: 'success delete product',
-      data: id,
-    };
     if (data.affectedRows) {
-      res.status(201).json(resObject);
+      wrapper.success(res, 'sucess delete product', { id }, 200);
     } else {
-      res.status(404).json({
-        message: 'Data not Found',
-      });
+      wrapper.error(res, 'cant find id', 'id\'s not found', 404);
     }
-  })
-    .catch((err) => {
-      res.status(400).json({
-        status: 'error bad request',
-        message: err.sqlMessage,
-        error: err,
-      });
-    });
+  }).catch((err) => {
+    wrapper.error(res, 'bad request', err, 400);
+  });
 };
 
 const getAllProducts = async (req, res) => {

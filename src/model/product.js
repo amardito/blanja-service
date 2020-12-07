@@ -1,18 +1,88 @@
 const { db } = require('../config/dbConnect');
 
 const createProduct = (payload) => new Promise((resolve, reject) => {
-  const qStr = 'INSERT INTO products SET ?';
-  db.query(qStr, payload, (err, data) => {
-    if (!err) {
-      resolve(data);
-    } else {
+  const productID = Date.now();
+  const modelProduct = {
+    id_product: productID,
+    product_name: payload.product_name,
+    product_by: payload.product_by,
+    product_price: payload.product_price,
+    product_qty: payload.product_qty,
+    category_id: payload.category_id,
+    product_desc: payload.product_desc,
+    product_sold: payload.product_sold,
+    product_img: payload.product_img,
+    created_at: new Date(Date.now()),
+    updated_at: new Date(Date.now()),
+  };
+
+  const qStrProduct = 'INSERT INTO products SET ?';
+  db.query(qStrProduct, modelProduct, (err) => {
+    if (err) {
       reject(err);
     }
   });
+
+  const qStrSize = 'INSERT INTO product_size SET ?';
+  const sizeLen = payload.size_id.length;
+  for (let i = 0; i < sizeLen; i += 1) {
+    const payloads = {
+      product_id: productID,
+      size_id: payload.size_id[i],
+    };
+    db.query(qStrSize, payloads, (err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  }
+
+  const qStrColor = 'INSERT INTO product_color SET ?';
+  const colorLen = payload.color_id.length;
+  for (let i = 0; i < colorLen; i += 1) {
+    const payloads = {
+      product_id: productID,
+      color_id: payload.color_id[i],
+    };
+    db.query(qStrColor, payloads, (err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  }
+
+  resolve(payload);
 });
 
 const getProduct = (payload) => new Promise((resolve, reject) => {
-  const qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id WHERE p.id_product = ?';
+  const qStr = `
+  SELECT
+      p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, cat.category_name,
+      p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at,
+      ps.size_id,
+      s.size,
+      pc.color_id,
+      c.color
+  FROM
+    products AS p
+  JOIN category AS cat 
+  ON 
+    cat.id_category = p.category_id
+  JOIN product_size AS ps
+  ON
+    ps.product_id = p.id_product
+  JOIN size AS s
+  ON
+    s.id_size = ps.size_id
+  JOIN product_color as pc
+  ON
+    pc.product_id = p.id_product
+  JOIN color AS c
+  ON  
+    c.id_color = pc.color_id
+  WHERE
+    p.id_product AND ps.product_id AND pc.product_id = ?`;
+
   db.query(qStr, payload, (err, data) => {
     if (!err) {
       resolve(data);
@@ -23,8 +93,57 @@ const getProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
+  const payloads = {
+    product_name: payload.product_name,
+    product_by: payload.product_by,
+    product_price: payload.product_price,
+    product_qty: payload.product_qty,
+    category_id: payload.category_id,
+    product_desc: payload.product_desc,
+    product_img: payload.product_img,
+    updated_at: new Date(Date.now()),
+  };
+
+  if (payload.size_id !== undefined) {
+    const currSize = 'DELETE FROM product_size WHERE product_id = ?';
+    db.query(currSize, idParams);
+
+    const qStrSize = 'INSERT INTO product_size SET ?';
+    const sizeLen = payload.size_id.length;
+    for (let i = 0; i < sizeLen; i += 1) {
+      const sizeModel = {
+        product_id: idParams,
+        size_id: payload.size_id[i],
+      };
+      db.query(qStrSize, sizeModel, (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    }
+  }
+
+  if (payload.color_id !== undefined) {
+    const currColor = 'DELETE FROM product_color WHERE product_id = ?';
+    db.query(currColor, idParams);
+
+    const qStrColor = 'INSERT INTO product_color SET ?';
+    const colorLen = payload.color_id.length;
+    for (let i = 0; i < colorLen; i += 1) {
+      const colorModel = {
+        product_id: idParams,
+        color_id: payload.color_id[i],
+      };
+      db.query(qStrColor, colorModel, (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    }
+  }
+
   const qStr = `UPDATE products SET ? WHERE id_product = ${idParams}`;
-  db.query(qStr, payload, (err, data) => {
+  db.query(qStr, payloads, (err, data) => {
     if (!err) {
       resolve(data);
     } else {
@@ -45,12 +164,10 @@ const deleteProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const getAll = (sortBy, sort) => new Promise((resolve, reject) => {
-  let qStr = '';
+  let qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id';
 
   if (sortBy) {
-    qStr = `SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY ${sortBy} ${sort}`;
-  } else {
-    qStr = 'SELECT p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at FROM products AS p JOIN category AS c ON c.id_category = p.category_id ORDER BY created_at DESC';
+    qStr = `${qStr} ORDER BY ${sortBy} ${sort}`;
   }
 
   db.query(qStr, (err, data) => {

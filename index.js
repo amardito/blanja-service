@@ -8,6 +8,7 @@ const server = require('./src/routes/server');
 const product = require('./src/routes/product');
 const search = require('./src/routes/search');
 const historyPay = require('./src/routes/history_payment');
+const auth = require('./src/routes/auth');
 
 const {
   PATH_ENDPOINT, PORT,
@@ -23,6 +24,7 @@ app.use(logger('dev'));
 app.use(PATH_ENDPOINT, product);
 app.use(PATH_ENDPOINT, search);
 app.use(PATH_ENDPOINT, historyPay);
+app.use(PATH_ENDPOINT, auth);
 
 app.use('/', server);
 

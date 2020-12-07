@@ -23,13 +23,12 @@ create a new file and rename that file to .env , put this file on
 main directory
 
 ```
-PATH_PRODUCT_ENDPOINT = /api/v1/product
-PATH_SEARCH_ENDPOINT = /api/v1/search
-PORT = 1010
-mysql_host = localhost
-mysql_user = root
-mysql_password = 
-mysql_database = blanjadb
+PATH_ENDPOINT = "/api/v1"
+PORT = "1010"
+MYSQL_HOST = "remotemysql.com"
+MYSQL_USER = "Zh8bfxNoV6"
+MYSQL_PASS = "xAM2L7Oi4q"
+MYSQL_DATABASE = "Zh8bfxNoV6"
 ```
 ## how to install
 

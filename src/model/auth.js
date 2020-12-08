@@ -51,10 +51,17 @@ const register = (payload, levelID) => new Promise((resolve, reject) => {
 });
 
 const login = (payload) => new Promise((resolve, reject) => {
-  const qStr = 'SELECT u.user_password FROM users AS u WHERE u.user_email = ?';
+  const qStr = `
+  SELECT u.user_password, lv.level 
+  FROM users AS u
+  JOIN level AS lv
+  ON
+    lv.id_level = u.level_id
+  WHERE u.user_email = ?`;
   let payloadData = {};
 
   db.query(qStr, payload.email, (err, data) => {
+    console.log(data);
     payloadData = { cekemail: data };
     if (err) {
       reject(err);
@@ -70,14 +77,21 @@ const login = (payload) => new Promise((resolve, reject) => {
           resolve(payloadData);
         } else {
           const key = process.env.KEY;
-          const token = jwt.sign({ email: payload.email }, key); // what key uses for?
-          payloadData = { ...payloadData, token: { token } };
+          const token = jwt.sign({
+            level: payloadData.cekemail[0].level,
+            email: payload.email,
+          }, key, { expiresIn: '1d' });
+          payloadData = { ...payloadData, token };
           resolve(payloadData);
         }
       });
     }
   });
 });
+
+// const logout = (payload) => new Promise((resolve, reject) => {
+
+// });
 
 module.exports = {
   register,

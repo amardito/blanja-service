@@ -22,7 +22,7 @@ const loginUser = async (req, res) => {
   await login(payload).then((data) => {
     if (data.cekemail[0] !== undefined) {
       if (data.cekpassword) {
-        wrapper.success(res, 'login success', data.token, 200);
+        wrapper.success(res, 'login success', { payload: { email: payload.email, level: data.cekemail[0].level }, token: data.token }, 200);
       } else {
         wrapper.error(res, 'login failed', 'wrong password', 401);
       }

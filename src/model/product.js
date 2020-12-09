@@ -24,11 +24,12 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
   });
 
   const qStrSize = 'INSERT INTO product_size SET ?';
-  const sizeLen = payload.size_id.length;
+  const arrSize = payload.size_id.split(',');
+  const sizeLen = arrSize.length;
   for (let i = 0; i < sizeLen; i += 1) {
     const payloads = {
       product_id: productID,
-      size_id: payload.size_id[i],
+      size_id: arrSize[i],
     };
     db.query(qStrSize, payloads, (err) => {
       if (err) {
@@ -38,11 +39,12 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
   }
 
   const qStrColor = 'INSERT INTO product_color SET ?';
-  const colorLen = payload.color_id.length;
+  const arrColor = payload.color_id.split(',');
+  const colorLen = arrColor.length;
   for (let i = 0; i < colorLen; i += 1) {
     const payloads = {
       product_id: productID,
-      color_id: payload.color_id[i],
+      color_id: arrColor[i],
     };
     db.query(qStrColor, payloads, (err) => {
       if (err) {
@@ -55,37 +57,62 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const getProduct = (payload) => new Promise((resolve, reject) => {
-  const qStr = `
+  let payloadData = {};
+
+  let qStr = `
   SELECT
-      p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, cat.category_name,
-      p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at,
-      ps.size_id,
-      s.size,
-      pc.color_id,
-      c.color
+      p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
+      cat.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at,
+      p.updated_at
   FROM
     products AS p
-  JOIN category AS cat 
-  ON 
+  JOIN category AS cat
+  ON
     cat.id_category = p.category_id
-  JOIN product_size AS ps
-  ON
-    ps.product_id = p.id_product
-  JOIN size AS s
-  ON
-    s.id_size = ps.size_id
-  JOIN product_color as pc
-  ON
-    pc.product_id = p.id_product
-  JOIN color AS c
-  ON  
-    c.id_color = pc.color_id
   WHERE
-    p.id_product AND ps.product_id AND pc.product_id = ?`;
+    p.id_product = ?`;
 
   db.query(qStr, payload, (err, data) => {
     if (!err) {
-      resolve(data);
+      const [product] = data;
+      payloadData = { product };
+    } else {
+      reject(err);
+    }
+  });
+
+  qStr = `
+  SELECT ps.size_id, s.size
+  FROM
+    product_size AS ps
+  JOIN size AS s
+  ON
+    s.id_size = ps.size_id
+  WHERE
+    ps.product_id = ?`;
+
+  db.query(qStr, payload, (err, data) => {
+    if (!err) {
+      payloadData = { ...payloadData, size: data };
+    } else {
+      reject(err);
+    }
+  });
+
+  qStr = `
+  SELECT pc.color_id, c.color
+  FROM
+    product_color AS pc
+  JOIN color AS c
+  ON
+    c.id_color = pc.color_id
+  WHERE
+    pc.product_id = ?`;
+
+  db.query(qStr, payload, (err, data) => {
+    if (!err) {
+      payloadData = { ...payloadData, color: data };
+      resolve(payloadData);
     } else {
       reject(err);
     }
@@ -233,62 +260,38 @@ module.exports = {
 };
 
 // const getProduct = (payload) => new Promise((resolve, reject) => {
-//   let payloadData = {};
-
-//   let qStr = `
+//   const qStr = `
 //   SELECT
 //       p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
-//       cat.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at,
-//       p.updated_at
+//       cat.category_name,
+//       p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at,
+//       ps.size_id,
+//       s.size,
+//       pc.color_id,
+//       c.color
 //   FROM
 //     products AS p
 //   JOIN category AS cat
 //   ON
 //     cat.id_category = p.category_id
-//   WHERE
-//     p.id_product = ?`;
-
-//   db.query(qStr, payload, (err, data) => {
-//     if (!err) {
-//       const [product] = data;
-//       payloadData = { product };
-//     } else {
-//       reject(err);
-//     }
-//   });
-
-//   qStr = `
-//   SELECT ps.size_id, s.size
-//   FROM
-//     product_size AS ps
+//   JOIN product_size AS ps
+//   ON
+//     ps.product_id = p.id_product
 //   JOIN size AS s
 //   ON
 //     s.id_size = ps.size_id
-//   WHERE
-//     ps.product_id = ?`;
-
-//   db.query(qStr, payload, (err, data) => {
-//     if (!err) {
-//       payloadData = { ...payloadData, size: data };
-//     } else {
-//       reject(err);
-//     }
-//   });
-
-//   qStr = `
-//   SELECT pc.color_id, c.color
-//   FROM
-//     product_color AS pc
+//   JOIN product_color as pc
+//   ON
+//     pc.product_id = p.id_product
 //   JOIN color AS c
 //   ON
 //     c.id_color = pc.color_id
 //   WHERE
-//     pc.product_id = ?`;
+//     p.id_product AND ps.product_id AND pc.product_id = ?`;
 
 //   db.query(qStr, payload, (err, data) => {
 //     if (!err) {
-//       payloadData = { ...payloadData, color: data };
-//       resolve(payloadData);
+//       resolve(data);
 //     } else {
 //       reject(err);
 //     }

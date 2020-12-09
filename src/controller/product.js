@@ -4,10 +4,19 @@ const {
 const wrapper = require('../helper/wrapper');
 
 const newProduct = async (req, res) => {
-  const payload = req.body;
+  let payload = req.body;
+
+  payload = {
+    ...payload,
+    product_img: req.pathFile,
+  };
 
   await createProduct(payload).then((data) => {
-    wrapper.success(res, 'sucess created new product', data, 201);
+    const payloadData = {
+      ...data,
+      product_img: req.pathFile.split(','),
+    };
+    wrapper.success(res, 'sucess created new product', payloadData, 201);
   }).catch((err) => {
     wrapper.error(res, 'bad request', err, 400);
   });
@@ -17,8 +26,15 @@ const getProductId = async (req, res) => {
   const { id } = req.params;
 
   await getProduct(id).then((data) => {
-    if (data.length) {
-      wrapper.success(res, 'found a data', data, 200);
+    if (data.product !== undefined) {
+      const payloadData = {
+        ...data,
+        product: {
+          ...data.product,
+          product_img: data.product.product_img.split(','),
+        },
+      };
+      wrapper.success(res, 'found a data', payloadData, 200);
     } else {
       wrapper.error(res, 'data not found', 'might be wrong id', 404);
     }

@@ -8,10 +8,14 @@ this is list of require dependencies
 
  ```
  "dependencies": {
-    "config": "^3.3.2",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
+    "multer": "^1.4.2",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.6"
   }
@@ -24,11 +28,12 @@ main directory
 
 ```
 PATH_ENDPOINT = "/api/v1"
-PORT = "1010"
-MYSQL_HOST = "remotemysql.com"
-MYSQL_USER = "Zh8bfxNoV6"
-MYSQL_PASS = "xAM2L7Oi4q"
-MYSQL_DATABASE = "Zh8bfxNoV6"
+PORT = "8000"
+MYSQL_HOST = "localhost"
+MYSQL_USER = "user"
+MYSQL_PASS = "password"
+MYSQL_DATABASE = "database"
+KEY = "token secret key"
 ```
 ## how to install
 

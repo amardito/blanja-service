@@ -57,7 +57,7 @@ const deleteProductId = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const { sort } = req.query;
+  const { sort, page, limit } = req.query;
   let { sortby } = req.query;
 
   if (sortby === 'name') {
@@ -69,9 +69,8 @@ const getAllProducts = async (req, res) => {
   } else if (sortby === 'popular') {
     sortby = 'product_sold';
   }
-
-  await getAll(sortby, sort).then((data) => {
-    if (data.length) {
+  await getAll([Number(limit), Number(page)], sortby, sort).then((data) => {
+    if (data.values.length) {
       wrapper.success(res, 'found a data', data, 200);
     } else {
       wrapper.error(res, 'data not found', 'add some products', 404);

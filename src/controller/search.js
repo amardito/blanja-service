@@ -3,7 +3,7 @@ const wrapper = require('../helper/wrapper');
 
 const search = async (req, res) => {
   const {
-    name, category, size, color, sort,
+    name, category, size, color, sort, page, limit,
   } = req.query;
   let { sortby } = req.query;
   const searchName = `%${name}%`;
@@ -18,15 +18,16 @@ const search = async (req, res) => {
     sortby = 'product_sold';
   }
 
-  await getBy([searchName, category, size, color], sortby, sort).then((data) => {
-    if (data.length) {
-      wrapper.success(res, 'found a data', data, 200);
-    } else {
-      wrapper.error(res, 'data not found', 'try another key word', 404);
-    }
-  }).catch((err) => {
-    wrapper.error(res, 'bad request', err, 400);
-  });
+  await getBy([searchName, category, size, color, Number(limit), Number(page)], sortby, sort)
+    .then((data) => {
+      if (data.values.length) {
+        wrapper.success(res, 'found a data', data, 200);
+      } else {
+        wrapper.error(res, 'data not found', 'try another key word', 404);
+      }
+    }).catch((err) => {
+      wrapper.error(res, 'bad request', err, 400);
+    });
 };
 
 const getAllCategory = async (req, res) => {

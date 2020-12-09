@@ -185,19 +185,39 @@ const deleteProduct = (payload) => new Promise((resolve, reject) => {
   });
 });
 
-const getAll = (sortBy, sort) => new Promise((resolve, reject) => {
+const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) => {
+  const limitHandler = limit || 3;
+  const pageHandler = (page - 1) * limitHandler || 0;
+  const handlerSort = sort || 'ASC';
+
+  if (page < 1) {
+    const err = { errQuery: `cann't show page = ${page}` };
+    reject(err);
+  }
+
   let qStr = `SELECT 
   p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, 
   c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at 
   FROM products AS p JOIN category AS c ON c.id_category = p.category_id`;
 
   if (sortBy) {
-    qStr = `${qStr} ORDER BY ${sortBy} ${sort}`;
+    qStr = `${qStr} ORDER BY ${sortBy} ${handlerSort} LIMIT ? OFFSET ?`;
+  } else {
+    qStr += ' LIMIT ? OFFSET ?';
   }
 
-  db.query(qStr, (err, data) => {
+  db.query(qStr, [limitHandler, pageHandler], (err, data) => {
+    const payloadData = {
+      values: data,
+      pageInfo: {
+        page: pageHandler === 0 ? 1 : (pageHandler / limitHandler) + 1,
+        nextPage: pageHandler === 0 ? 2 : (pageHandler / limitHandler) + 2,
+        prevPage: pageHandler === 0 ? null : (pageHandler / limitHandler),
+        limit: limitHandler,
+      },
+    };
     if (!err) {
-      resolve(data);
+      resolve(payloadData);
     } else {
       reject(err);
     }

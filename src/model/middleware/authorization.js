@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { db } = require('../config/dbConnect');
+const { db } = require('../../config/dbConnect');
 
 const login = (payload) => new Promise((resolve, reject) => {
   const qStr = 'SELECT token FROM token_blacklist WHERE token = ?';

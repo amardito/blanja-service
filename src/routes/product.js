@@ -1,6 +1,6 @@
 const app = require('express').Router();
 
-const { tokenCheck, levelCheck } = require('../helper/authorization');
+const { tokenCheck, levelCheck } = require('../helper/middleware/authorization');
 const {
   newProduct, getProductId, updateProductId, deleteProductId, getAllProducts,
 } = require('../controller/product');

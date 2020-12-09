@@ -1,5 +1,5 @@
-const wrapper = require('./wrapper');
-const { login } = require('../model/authorization');
+const wrapper = require('../wrapper');
+const { login } = require('../../model/middleware/authorization');
 
 const tokenCheck = (req, res, next) => {
   let token = req.header('authorization');

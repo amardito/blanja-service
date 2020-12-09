@@ -5,16 +5,13 @@ const getBy = ([productName, category, size, color], sortBy, sort) => new Promis
     let qStr;
     const qsName = `p.product_name LIKE '${productName}' AND `;
     const qsCategory = `cat.id_category LIKE ${category} AND `;
-    const qsSize = `ps.size_id LIKE ${size} AND `;
-    const qsColor = `pc.color_id LIKE ${color} AND`;
+    const qsSize = `ps.size_id REGEXP '${size}' AND `;
+    const qsColor = `pc.color_id REGEXP '${color}' AND`;
 
-    if (size !== undefined && color !== undefined) {
-      qStr = `
-      SELECT
+    qStr = `
+    SELECT
         p.id_product, p.product_name, p.product_by, p.product_price, 
-        cat.category_name, p.product_sold, p.product_img,
-        ps.size_id,
-        pc.color_id
+        cat.category_name, p.product_sold, p.product_img
       FROM
         products AS p
       JOIN category AS cat 
@@ -26,49 +23,8 @@ const getBy = ([productName, category, size, color], sortBy, sort) => new Promis
       JOIN product_color as pc
       ON
         pc.product_id = p.id_product
-      WHERE `;
-    } else if (size !== undefined) {
-      qStr = `
-      SELECT
-        p.id_product, p.product_name, p.product_by, p.product_price, 
-        cat.category_name, p.product_sold, p.product_img,
-        ps.size_id
-      FROM
-        products AS p
-      JOIN category AS cat 
-      ON 
-        cat.id_category = p.category_id
-      JOIN product_size AS ps
-      ON
-        ps.product_id = p.id_product
-      WHERE `;
-    } else if (color !== undefined) {
-      qStr = `
-      SELECT
-        p.id_product, p.product_name, p.product_by, p.product_price, 
-        cat.category_name, p.product_sold, p.product_img,
-        pc.color_id
-      FROM
-        products AS p
-      JOIN category AS cat 
-      ON 
-        cat.id_category = p.category_id
-      JOIN product_color AS pc
-      ON
-        pc.product_id = p.id_product
-      WHERE `;
-    } else {
-      qStr = `
-      SELECT
-        p.id_product, p.product_name, p.product_by, p.product_price, 
-        cat.category_name, p.product_sold, p.product_img
-      FROM
-        products AS p
-      JOIN category AS cat 
-      ON 
-        cat.id_category = p.category_id
-      WHERE `;
-    }
+      WHERE
+      `;
 
     if (productName) {
       qStr += qsName;
@@ -82,9 +38,11 @@ const getBy = ([productName, category, size, color], sortBy, sort) => new Promis
     if (color) {
       qStr += qsColor;
     }
+
     const checkAND = qStr.lastIndexOf('AND');
     qStr = qStr.substring(0, checkAND);
 
+    qStr += ' GROUP BY ps.product_id, pc.product_id';
     if (sortBy) {
       qStr = `${qStr} ORDER BY ${sortBy} ${sort}`;
     }

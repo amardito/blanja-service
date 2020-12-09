@@ -1,14 +1,14 @@
-const express = require('express');
+const app = require('express').Router();
 
-const app = express.Router();
+const { tokenCheck, levelCheck } = require('../helper/authorization');
 const {
   newProduct, getProductId, updateProductId, deleteProductId, getAllProducts,
 } = require('../controller/product');
 
-app.post('/product/create', newProduct);
-app.get('/product/:id', getProductId);
+app.post('/product/create', tokenCheck, levelCheck, newProduct);
+app.get('/product/:id', tokenCheck, getProductId);
 app.get('/products', getAllProducts);
-app.put('/product/update/:id', updateProductId);
-app.delete('/product/delete/:id', deleteProductId);
+app.put('/product/update/:id', tokenCheck, levelCheck, updateProductId);
+app.delete('/product/delete/:id', tokenCheck, levelCheck, deleteProductId);
 
 module.exports = app;

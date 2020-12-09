@@ -18,7 +18,7 @@ const register = (payload, levelID) => new Promise((resolve, reject) => {
         user_name: payload.username,
         user_email: payload.email,
         user_password: '',
-        user_level: levelID,
+        level_id: levelID,
       };
 
       bcrypt.genSalt(saltRounds, (errSalt, salt) => {
@@ -61,7 +61,6 @@ const login = (payload) => new Promise((resolve, reject) => {
   let payloadData = {};
 
   db.query(qStr, payload.email, (err, data) => {
-    console.log(data);
     payloadData = { cekemail: data };
     if (err) {
       reject(err);
@@ -89,11 +88,19 @@ const login = (payload) => new Promise((resolve, reject) => {
   });
 });
 
-// const logout = (payload) => new Promise((resolve, reject) => {
-
-// });
+const logout = (payload) => new Promise((resolve, reject) => {
+  const qStr = 'INSERT INTO token_blacklist SET ?';
+  db.query(qStr, payload, (err) => {
+    if (err) {
+      reject(err);
+    } else {
+      resolve();
+    }
+  });
+});
 
 module.exports = {
   register,
   login,
+  logout,
 };

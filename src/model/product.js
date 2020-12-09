@@ -211,3 +211,66 @@ module.exports = {
   updateProduct,
   deleteProduct,
 };
+
+// const getProduct = (payload) => new Promise((resolve, reject) => {
+//   let payloadData = {};
+
+//   let qStr = `
+//   SELECT
+//       p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
+//       cat.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at,
+//       p.updated_at
+//   FROM
+//     products AS p
+//   JOIN category AS cat
+//   ON
+//     cat.id_category = p.category_id
+//   WHERE
+//     p.id_product = ?`;
+
+//   db.query(qStr, payload, (err, data) => {
+//     if (!err) {
+//       const [product] = data;
+//       payloadData = { product };
+//     } else {
+//       reject(err);
+//     }
+//   });
+
+//   qStr = `
+//   SELECT ps.size_id, s.size
+//   FROM
+//     product_size AS ps
+//   JOIN size AS s
+//   ON
+//     s.id_size = ps.size_id
+//   WHERE
+//     ps.product_id = ?`;
+
+//   db.query(qStr, payload, (err, data) => {
+//     if (!err) {
+//       payloadData = { ...payloadData, size: data };
+//     } else {
+//       reject(err);
+//     }
+//   });
+
+//   qStr = `
+//   SELECT pc.color_id, c.color
+//   FROM
+//     product_color AS pc
+//   JOIN color AS c
+//   ON
+//     c.id_color = pc.color_id
+//   WHERE
+//     pc.product_id = ?`;
+
+//   db.query(qStr, payload, (err, data) => {
+//     if (!err) {
+//       payloadData = { ...payloadData, color: data };
+//       resolve(payloadData);
+//     } else {
+//       reject(err);
+//     }
+//   });
+// });

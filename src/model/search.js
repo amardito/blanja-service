@@ -34,16 +34,16 @@ const getBy = ([productName, category, size, color, limit, page], sortBy, sort) 
       WHERE
       `;
 
-    if (productName) {
+    if (productName !== '%undefined%') {
       qStr += qsName;
     }
-    if (category) {
+    if (category !== undefined) {
       qStr += qsCategory;
     }
-    if (size) {
+    if (size !== undefined) {
       qStr += qsSize;
     }
-    if (color) {
+    if (color !== undefined) {
       qStr += qsColor;
     }
 

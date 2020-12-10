@@ -57,8 +57,6 @@ const updateProductId = async (req, res) => {
     };
   }
 
-  res.send(payload);
-
   await updateProduct(payload, id).then((data) => {
     if (data.affectedRows) {
       wrapper.success(res, 'sucess update product', { id, payload }, 201);

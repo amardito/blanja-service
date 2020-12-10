@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { db } = require('../config/dbConnect');
 
 const createProduct = (payload) => new Promise((resolve, reject) => {
@@ -24,34 +25,30 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
   });
 
   const qStrSize = 'INSERT INTO product_size SET ?';
-  const arrSize = payload.size_id.split(',');
-  const sizeLen = arrSize.length;
-  for (let i = 0; i < sizeLen; i += 1) {
+  payload.size_id.split(',').map((val) => {
     const payloads = {
       product_id: productID,
-      size_id: arrSize[i],
+      size_id: val,
     };
-    db.query(qStrSize, payloads, (err) => {
+    return db.query(qStrSize, payloads, (err) => {
       if (err) {
         reject(err);
       }
     });
-  }
+  });
 
   const qStrColor = 'INSERT INTO product_color SET ?';
-  const arrColor = payload.color_id.split(',');
-  const colorLen = arrColor.length;
-  for (let i = 0; i < colorLen; i += 1) {
+  payload.color_id.split(',').mpa((val) => {
     const payloads = {
       product_id: productID,
-      color_id: arrColor[i],
+      color_id: val,
     };
-    db.query(qStrColor, payloads, (err) => {
+    return db.query(qStrColor, payloads, (err) => {
       if (err) {
         reject(err);
       }
     });
-  }
+  });
 
   resolve(payload);
 });
@@ -120,21 +117,44 @@ const getProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
-  const payloads = {
+  let payloads = {
     product_name: payload.product_name,
     product_by: payload.product_by,
     product_price: payload.product_price,
     product_qty: payload.product_qty,
     category_id: payload.category_id,
     product_desc: payload.product_desc,
-    product_img: payload.product_img,
-    updated_at: new Date(Date.now()),
   };
 
+  if (payload.product_img !== undefined) {
+    db.query(`SELECT product_img FROM products WHERE id_product = ${idParams}`, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        data[0].product_img.split(',').map((arrImg) => fs.unlink(`public${arrImg}`, (error) => {
+          if (error !== null) {
+            reject(error);
+          }
+        }));
+      }
+    });
+    payloads = {
+      ...payloads,
+      product_img: payload.product_img,
+      updated_at: new Date(Date.now()),
+    };
+  } else {
+    payloads = {
+      ...payloads,
+      updated_at: new Date(Date.now()),
+    };
+  }
   const qStr = `UPDATE products SET ? WHERE id_product = ${idParams}`;
   db.query(qStr, payloads, (err, data) => {
     if (!err) {
-      resolve(data);
+      if (payload.product_img !== undefined) {
+        resolve({ ...payload, product_img: payload.product_img.split(','), data });
+      } resolve({ data });
     } else {
       reject(err);
     }
@@ -142,26 +162,20 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
 
   if (payload.size_id !== undefined) {
     const currSize = 'DELETE FROM product_size WHERE product_id = ?';
-    db.query(currSize, idParams, (err, data) => {
+    db.query(currSize, idParams, (err) => {
       if (!err) {
-        if (data.affectedRows) {
-          const qStrSize = 'INSERT INTO product_size SET ?';
-          const arrSize = payload.size_id.split(',');
-          const sizeLen = arrSize.length;
-          for (let i = 0; i < sizeLen; i += 1) {
-            const sizeModel = {
-              product_id: idParams,
-              size_id: arrSize[i],
-            };
-            db.query(qStrSize, sizeModel, (error) => {
-              if (error) {
-                reject(error);
-              }
-            });
-          }
-        } else {
-          resolve(data);
-        }
+        const qStrSize = 'INSERT INTO product_size SET ?';
+        payload.size_id.split(',').map((val) => {
+          const sizeModel = {
+            product_id: idParams,
+            size_id: val,
+          };
+          return db.query(qStrSize, sizeModel, (error) => {
+            if (error) {
+              reject(error);
+            }
+          });
+        });
       } else {
         reject(err);
       }
@@ -170,26 +184,20 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
 
   if (payload.color_id !== undefined) {
     const currColor = 'DELETE FROM product_color WHERE product_id = ?';
-    db.query(currColor, idParams, (err, data) => {
+    db.query(currColor, idParams, (err) => {
       if (!err) {
-        if (data.affectedRows) {
-          const qStrColor = 'INSERT INTO product_color SET ?';
-          const arrColor = payload.color_id.split(',');
-          const colorLen = arrColor.length;
-          for (let i = 0; i < colorLen; i += 1) {
-            const colorModel = {
-              product_id: idParams,
-              color_id: arrColor[i],
-            };
-            db.query(qStrColor, colorModel, (error) => {
-              if (error) {
-                reject(error);
-              }
-            });
-          }
-        } else {
-          resolve(data);
-        }
+        const qStrColor = 'INSERT INTO product_color SET ?';
+        payload.color_id.split(',').map((val) => {
+          const colorModel = {
+            product_id: idParams,
+            color_id: val,
+          };
+          return db.query(qStrColor, colorModel, (error) => {
+            if (error) {
+              reject(error);
+            }
+          });
+        });
       } else {
         reject(err);
       }
@@ -229,6 +237,15 @@ const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) =>
   c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at 
   FROM products AS p JOIN category AS c ON c.id_category = p.category_id`;
 
+  let totalPage;
+  db.query('SELECT COUNT(id_product) AS num FROM products', (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      totalPage = Math.ceil(data[0].num / limitHandler);
+    }
+  });
+
   if (sortBy) {
     qStr = `${qStr} ORDER BY ${sortBy} ${handlerSort} LIMIT ? OFFSET ?`;
   } else {
@@ -236,13 +253,19 @@ const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) =>
   }
 
   db.query(qStr, [limitHandler, pageHandler], (err, data) => {
+    const findPage = pageHandler / limitHandler;
+    let nextpage = findPage + 2;
+    if (nextpage <= totalPage) {
+      nextpage = `${process.env.PATH_ENDPOINT}/products?page=${findPage + 2}`;
+    } else { nextpage = null; }
+
     const payloadData = {
       values: data,
       pageInfo: {
-        page: pageHandler === 0 ? 1 : (pageHandler / limitHandler) + 1,
-        nextPage: pageHandler === 0 ? 2 : (pageHandler / limitHandler) + 2,
-        prevPage: pageHandler === 0 ? null : (pageHandler / limitHandler),
-        limit: limitHandler,
+        page: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/products?page=1` : `${process.env.PATH_ENDPOINT}/products?page=${findPage + 1}`,
+        nextPage: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/products?page=2` : nextpage,
+        prevPage: pageHandler === 0 ? null : `${process.env.PATH_ENDPOINT}/products?page=${findPage}`,
+        totalPage,
       },
     };
     if (!err) {

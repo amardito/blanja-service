@@ -58,7 +58,7 @@ const updateProductId = async (req, res) => {
   }
 
   await updateProduct(payload, id).then((data) => {
-    if (data.affectedRows) {
+    if (data.data.affectedRows) {
       wrapper.success(res, 'sucess update product', { id, payload }, 201);
     } else {
       wrapper.error(res, 'cant find id', 'id\'s not found', 404);

@@ -6,6 +6,9 @@ const wrapper = require('../helper/wrapper');
 const newProduct = async (req, res) => {
   let payload = req.body;
 
+  if (req.pathFile === '') {
+    wrapper.error(res, 'you need upload image file at least 1', 'required field', 400);
+  }
   payload = {
     ...payload,
     product_img: req.pathFile,
@@ -47,10 +50,14 @@ const updateProductId = async (req, res) => {
   const { id } = req.params;
   let payload = req.body;
 
-  payload = {
-    ...payload,
-    product_img: req.pathFile,
-  };
+  if (req.pathFile !== '') {
+    payload = {
+      ...payload,
+      product_img: req.pathFile,
+    };
+  }
+
+  res.send(payload);
 
   await updateProduct(payload, id).then((data) => {
     if (data.affectedRows) {

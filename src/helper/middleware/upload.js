@@ -39,9 +39,6 @@ const multiUpload = (req, res, next) => {
     if (err) {
       wrapper.error(res, 'Multiple upload error', err, 400);
     } else {
-      if (req.files[0] === undefined) {
-        wrapper.error(res, 'you need upload image file at least 1', 'required field', 400);
-      }
       const pathFile = req.files.map((data) => `/images/${data.filename}`);
       req.pathFile = pathFile.join(',');
       next();

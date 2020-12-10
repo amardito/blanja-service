@@ -146,11 +146,12 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
       if (!err) {
         if (data.affectedRows) {
           const qStrSize = 'INSERT INTO product_size SET ?';
-          const sizeLen = payload.size_id.length;
+          const arrSize = payload.size_id.split(',');
+          const sizeLen = arrSize.length;
           for (let i = 0; i < sizeLen; i += 1) {
             const sizeModel = {
               product_id: idParams,
-              size_id: payload.size_id[i],
+              size_id: arrSize[i],
             };
             db.query(qStrSize, sizeModel, (error) => {
               if (error) {
@@ -173,11 +174,12 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
       if (!err) {
         if (data.affectedRows) {
           const qStrColor = 'INSERT INTO product_color SET ?';
-          const colorLen = payload.color_id.length;
+          const arrColor = payload.color_id.split(',');
+          const colorLen = arrColor.length;
           for (let i = 0; i < colorLen; i += 1) {
             const colorModel = {
               product_id: idParams,
-              color_id: payload.color_id[i],
+              color_id: arrColor[i],
             };
             db.query(qStrColor, colorModel, (error) => {
               if (error) {

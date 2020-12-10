@@ -45,7 +45,12 @@ const getProductId = async (req, res) => {
 
 const updateProductId = async (req, res) => {
   const { id } = req.params;
-  const payload = req.body;
+  let payload = req.body;
+
+  payload = {
+    ...payload,
+    product_img: req.pathFile,
+  };
 
   await updateProduct(payload, id).then((data) => {
     if (data.affectedRows) {

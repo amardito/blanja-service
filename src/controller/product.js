@@ -17,6 +17,8 @@ const newProduct = async (req, res) => {
   await createProduct(payload).then((data) => {
     const payloadData = {
       ...data,
+      color_id: payload.color_id.split(','),
+      size_id: payload.size_id.split(','),
       product_img: req.pathFile.split(','),
     };
     wrapper.success(res, 'sucess created new product', payloadData, 201);

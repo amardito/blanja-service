@@ -38,7 +38,7 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
   });
 
   const qStrColor = 'INSERT INTO product_color SET ?';
-  payload.color_id.split(',').mpa((val) => {
+  payload.color_id.split(',').map((val) => {
     const payloads = {
       product_id: productID,
       color_id: val,
@@ -49,7 +49,6 @@ const createProduct = (payload) => new Promise((resolve, reject) => {
       }
     });
   });
-
   resolve(payload);
 });
 
@@ -206,6 +205,18 @@ const updateProduct = (payload, idParams) => new Promise((resolve, reject) => {
 });
 
 const deleteProduct = (payload) => new Promise((resolve, reject) => {
+  db.query(`SELECT product_img FROM products WHERE id_product = ${payload}`, (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      data[0].product_img.split(',').map((arrImg) => fs.unlink(`public${arrImg}`, (error) => {
+        if (error !== null) {
+          reject(error);
+        }
+      }));
+    }
+  });
+
   const qStr = 'DELETE FROM products WHERE id_product = ?';
   db.query(qStr, payload, (err, data) => {
     if (!err) {

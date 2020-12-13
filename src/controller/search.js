@@ -7,6 +7,7 @@ const search = async (req, res) => {
   } = req.query;
   let { sortby } = req.query;
   const searchName = `%${name}%`;
+  const url = req.query;
 
   if (sortby === 'name') {
     sortby = 'product_name';
@@ -18,7 +19,7 @@ const search = async (req, res) => {
     sortby = 'product_sold';
   }
 
-  await getBy([searchName, category, size, color, Number(limit), Number(page)], sortby, sort)
+  await getBy([searchName, category, size, color, Number(limit), Number(page)], sortby, sort, url)
     .then((data) => {
       if (data.values.length) {
         wrapper.success(res, 'found a data', data, 200);

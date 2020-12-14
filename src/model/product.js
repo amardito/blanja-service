@@ -234,7 +234,7 @@ const deleteProduct = (payload) => new Promise((resolve, reject) => {
 });
 
 const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) => {
-  const limitHandler = limit || 3;
+  const limitHandler = limit || 15;
   const pageHandler = (page - 1) * limitHandler || 0;
   const handlerSort = sort || 'ASC';
 

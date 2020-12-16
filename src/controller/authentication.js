@@ -11,6 +11,9 @@ const registerUser = async (req, res) => {
       wrapper.error(res, 'failed create new account', 'email already exists', 409);
     }
   }).catch((err) => {
+    if (err.code === 'ER_DUP_ENTRY') {
+      wrapper.error(res, 'bad request', err.sqlMessage, 400);
+    }
     wrapper.error(res, 'bad request', err, 400);
   });
 };

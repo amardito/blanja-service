@@ -27,8 +27,14 @@ const register = (payload) => new Promise((resolve, reject) => {
         } else {
           bcrypt.hash(payload.password, salt, (error, hasedPass) => {
             if (!error) {
-              const newPayloads = { ...payloads, user_password: hasedPass };
-
+              let newPayloads = { ...payloads, user_password: hasedPass };
+              if (payload.store !== undefined) {
+                newPayloads = {
+                  ...newPayloads,
+                  store: payload.store,
+                  phone: payload.phone,
+                };
+              }
               const qs = 'INSERT INTO users SET  ?';
               db.query(qs, newPayloads, (e) => {
                 if (e) {

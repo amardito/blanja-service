@@ -12,9 +12,10 @@ const registerUser = async (req, res) => {
     }
   }).catch((err) => {
     if (err.code === 'ER_DUP_ENTRY') {
-      wrapper.error(res, 'bad request', err.sqlMessage, 400);
+      wrapper.error(res, 'bad request', err.sqlMessage, 409);
+    } else {
+      wrapper.error(res, 'bad request', err, 400);
     }
-    wrapper.error(res, 'bad request', err, 400);
   });
 };
 

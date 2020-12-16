@@ -1,4 +1,6 @@
-const { getBy, getCategory } = require('../model/search');
+const {
+  getBy, getCategory, getSize, getColor,
+} = require('../model/search');
 const wrapper = require('../helper/wrapper');
 
 const search = async (req, res) => {
@@ -43,7 +45,33 @@ const getAllCategory = async (req, res) => {
   });
 };
 
+const getAllSize = async (req, res) => {
+  await getSize().then((data) => {
+    if (data.length) {
+      wrapper.success(res, 'found a data', data, 200);
+    } else {
+      wrapper.error(res, 'data not found', 'might be wrong id', 404);
+    }
+  }).catch((err) => {
+    wrapper.error(res, 'bad request', err, 400);
+  });
+};
+
+const getAllColor = async (req, res) => {
+  await getColor().then((data) => {
+    if (data.length) {
+      wrapper.success(res, 'found a data', data, 200);
+    } else {
+      wrapper.error(res, 'data not found', 'might be wrong id', 404);
+    }
+  }).catch((err) => {
+    wrapper.error(res, 'bad request', err, 400);
+  });
+};
+
 module.exports = {
   search,
   getAllCategory,
+  getAllSize,
+  getAllColor,
 };

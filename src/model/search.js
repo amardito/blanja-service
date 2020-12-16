@@ -119,7 +119,31 @@ const getCategory = () => new Promise((resolve, reject) => {
   });
 });
 
+const getSize = () => new Promise((resolve, reject) => {
+  const qStr = 'SELECT * FROM size';
+  db.query(qStr, (err, data) => {
+    if (!err) {
+      resolve(data);
+    } else {
+      reject(err);
+    }
+  });
+});
+
+const getColor = () => new Promise((resolve, reject) => {
+  const qStr = 'SELECT * FROM color';
+  db.query(qStr, (err, data) => {
+    if (!err) {
+      resolve(data);
+    } else {
+      reject(err);
+    }
+  });
+});
+
 module.exports = {
   getBy,
   getCategory,
+  getSize,
+  getColor,
 };

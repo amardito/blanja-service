@@ -1,5 +1,5 @@
 const {
-  createProduct, getProduct, updateProduct, deleteProduct, getAll,
+  createProduct, getProduct, updateProduct, deleteProduct, getAll, getByStore,
 } = require('../model/product');
 const wrapper = require('../helper/wrapper');
 
@@ -108,10 +108,25 @@ const getAllProducts = async (req, res) => {
   });
 };
 
+const getAllByStore = async (req, res) => {
+  const { page, limit } = req.query;
+  const payload = req.body;
+  await getByStore(payload, [Number(limit), Number(page)]).then((data) => {
+    if (data.values[0] !== undefined) {
+      wrapper.success(res, 'found a data', data, 200);
+    } else {
+      wrapper.error(res, 'data not found', 'might be wrong id', 404);
+    }
+  }).catch((err) => {
+    wrapper.error(res, 'bad request', err, 400);
+  });
+};
+
 module.exports = {
   newProduct,
   getProductId,
   getAllProducts,
   updateProductId,
   deleteProductId,
+  getAllByStore,
 };

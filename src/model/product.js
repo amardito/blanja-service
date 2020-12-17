@@ -58,7 +58,7 @@ const getProduct = (payload) => new Promise((resolve, reject) => {
   let qStr = `
   SELECT
       p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
-      cat.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at,
+      cat.category_name, p.category_id, p.product_desc, p.product_sold, p.product_img, p.created_at,
       p.updated_at
   FROM
     products AS p
@@ -287,49 +287,54 @@ const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) =>
   });
 });
 
+const getByStore = (payload, [limit, page]) => new Promise((resolve, reject) => {
+  const limitHandler = limit || 10;
+  const pageHandler = (page - 1) * limitHandler || 0;
+
+  let totalPage;
+  db.query(`SELECT COUNT(id_product) AS num FROM products WHERE product_by LIKE '%${payload.store}%'`, (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      totalPage = Math.ceil(data[0].num / limitHandler);
+    }
+  });
+
+  if (page < 1) {
+    const err = { errQuery: `cann't show page = ${page}` };
+    reject(err);
+  }
+
+  const qStr = `SELECT p.id_product, p.product_name, p.product_price, p.product_qty FROM products AS p WHERE p.product_by LIKE '%${payload.store}%'`;
+  db.query(qStr, (err, data) => {
+    const findPage = pageHandler / limitHandler;
+    let nextpage = findPage + 2;
+    if (nextpage <= totalPage) {
+      nextpage = `${process.env.PATH_ENDPOINT}/myproducts?page=${findPage + 2}`;
+    } else { nextpage = null; }
+
+    const payloadData = {
+      values: data,
+      pageInfo: {
+        page: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/myproducts?page=1` : `${process.env.PATH_ENDPOINT}/myproducts?page=${findPage + 1}`,
+        nextPage: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/myproducts?page=2` : nextpage,
+        prevPage: pageHandler === 0 ? null : `${process.env.PATH_ENDPOINT}/myproducts?page=${findPage}`,
+        totalPage,
+      },
+    };
+    if (!err) {
+      resolve(payloadData);
+    } else {
+      reject(err);
+    }
+  });
+});
+
 module.exports = {
   createProduct,
   getProduct,
   getAll,
   updateProduct,
   deleteProduct,
+  getByStore,
 };
-
-// const getProduct = (payload) => new Promise((resolve, reject) => {
-//   const qStr = `
-//   SELECT
-//       p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
-//       cat.category_name,
-//       p.product_desc, p.product_sold, p.product_img, p.created_at, p.updated_at,
-//       ps.size_id,
-//       s.size,
-//       pc.color_id,
-//       c.color
-//   FROM
-//     products AS p
-//   JOIN category AS cat
-//   ON
-//     cat.id_category = p.category_id
-//   JOIN product_size AS ps
-//   ON
-//     ps.product_id = p.id_product
-//   JOIN size AS s
-//   ON
-//     s.id_size = ps.size_id
-//   JOIN product_color as pc
-//   ON
-//     pc.product_id = p.id_product
-//   JOIN color AS c
-//   ON
-//     c.id_color = pc.color_id
-//   WHERE
-//     p.id_product AND ps.product_id AND pc.product_id = ?`;
-
-//   db.query(qStr, payload, (err, data) => {
-//     if (!err) {
-//       resolve(data);
-//     } else {
-//       reject(err);
-//     }
-//   });
-// });

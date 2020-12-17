@@ -35,7 +35,7 @@ const getBy = ([productName, category, size, color, limit, page], sortBy, sort, 
 
     qStr = `SELECT
     p.id_product, p.product_name, p.product_by, p.product_price, 
-    cat.category_name, p.product_sold, p.product_img ${Str}`;
+    cat.category_name, p.category_id, p.product_sold, p.product_img ${Str}`;
 
     qCstr = `SELECT COUNT(id_product) AS num ${Str}`;
 

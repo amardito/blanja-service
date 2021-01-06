@@ -93,7 +93,7 @@ const getBy = ([productName, category, size, color, limit, page], sortBy, sort, 
       const payloadData = {
         values: data,
         pageInfo: {
-          page: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/search?${urlPage}&page=1` : `${process.env.PATH_ENDPOINT}/search?${urlPage}&page=${findPage + 1}`,
+          page: pageHandler === 0 ? '1' : `${findPage + 1}`,
           nextPage: pageHandler === 0 ? `${process.env.PATH_ENDPOINT}/search?${urlPage}&page=2` : nextpage,
           prevPage: pageHandler === 0 ? null : `${process.env.PATH_ENDPOINT}/search?${urlPage}&page=${findPage}`,
           totalPage,

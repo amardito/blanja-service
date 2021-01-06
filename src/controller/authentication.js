@@ -27,6 +27,7 @@ const loginUser = async (req, res) => {
       if (data.cekpassword) {
         wrapper.success(res, 'login success', {
           email: payload.email,
+          username: data.cekemail[0].user_name,
           level: data.cekemail[0].level,
           store: data.cekemail[0].store,
           token: data.token,

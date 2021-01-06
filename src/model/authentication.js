@@ -58,7 +58,7 @@ const register = (payload) => new Promise((resolve, reject) => {
 
 const login = (payload) => new Promise((resolve, reject) => {
   const qStr = `
-  SELECT u.user_password, lv.level, u.store
+  SELECT u.user_name, u.user_password, lv.level, u.store
   FROM users AS u
   JOIN level AS lv
   ON
@@ -68,6 +68,7 @@ const login = (payload) => new Promise((resolve, reject) => {
 
   db.query(qStr, payload.email, (err, data) => {
     payloadData = { cekemail: data };
+    console.log(data);
     if (err) {
       reject(err);
     } else if (data[0] === undefined) {

@@ -68,7 +68,7 @@ const login = (payload) => new Promise((resolve, reject) => {
 
   db.query(qStr, payload.email, (err, data) => {
     payloadData = { cekemail: data };
-    console.log(data);
+    // console.log(data);
     if (err) {
       reject(err);
     } else if (data[0] === undefined) {

@@ -95,6 +95,47 @@ const login = (payload) => new Promise((resolve, reject) => {
   });
 });
 
+const login2 = (payload) => new Promise((resolve, reject) => {
+  const qStr = `
+  SELECT u.user_name, u.user_password, lv.level, u.store
+  FROM users AS u
+  JOIN level AS lv
+  ON
+    lv.id_level = u.level_id
+  WHERE u.user_email = ?`;
+  let payloadData = {};
+
+  db.query(qStr, payload.email, (err, data) => {
+    payloadData = { cekemail: data };
+    if (err) {
+      reject(err);
+    } else if (data[0] === undefined) {
+      resolve(payloadData);
+    } else if (data[0].level === 'costumer') {
+      payloadData = { ...payloadData, ceklevel: 401 };
+      resolve(payloadData);
+    } else {
+      bcrypt.compare(payload.password, data[0].user_password, (error, result) => {
+        payloadData = { ...payloadData, cekpassword: result };
+        if (error) {
+          reject(error);
+        }
+        if (!result) {
+          resolve(payloadData);
+        } else {
+          const key = process.env.KEY;
+          const token = jwt.sign({
+            level: payloadData.cekemail[0].level,
+            email: payload.email,
+          }, key, { expiresIn: '1d' });
+          payloadData = { ...payloadData, token };
+          resolve(payloadData);
+        }
+      });
+    }
+  });
+});
+
 const logout = (payload) => new Promise((resolve, reject) => {
   const qStr = 'INSERT INTO token_blacklist SET ?';
   db.query(qStr, payload, (err) => {
@@ -110,4 +151,5 @@ module.exports = {
   register,
   login,
   logout,
+  login2,
 };

@@ -25,6 +25,7 @@ const createAddress = (payload) => new Promise((resolve, reject) => {
     recip_name: payload.recip,
     address_street: payload.street,
     address_city: payload.city,
+    address_region: payload.region,
     address_postcode: payload.postcode,
     recip_phone: payload.phone,
   };

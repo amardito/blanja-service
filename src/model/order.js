@@ -42,7 +42,14 @@ const getUserOrder = (payload) => new Promise((resolve, reject) => {
 });
 
 const getIdOrder = (payload) => new Promise((resolve, reject) => {
-  const qStr = `SELECT * FROM history_payment WHERE id_payment = ${payload}`;
+  const qStr = `
+  SELECT * 
+  FROM history_payment AS hp 
+  JOIN products AS p ON
+  p.id_product = hp.product_id
+  JOIN address AS a ON
+  a.id_address = hp.address_id
+  WHERE hp.id_payment = ${payload}`;
   db.query(qStr, (err, data) => {
     if (err) {
       reject(err);

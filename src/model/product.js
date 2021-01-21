@@ -288,7 +288,7 @@ const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) =>
 });
 
 const getByStore = (payload, [limit, page]) => new Promise((resolve, reject) => {
-  const limitHandler = limit || 10;
+  const limitHandler = limit || 15;
   const pageHandler = (page - 1) * limitHandler || 0;
 
   let totalPage;
@@ -305,7 +305,7 @@ const getByStore = (payload, [limit, page]) => new Promise((resolve, reject) => 
     reject(err);
   }
 
-  const qStr = `SELECT p.id_product, p.product_name, p.product_price, p.product_qty FROM products AS p WHERE p.product_by LIKE '%${payload.store}%'`;
+  const qStr = `SELECT p.id_product, p.product_name, p.product_price, p.product_qty, p.product_img FROM products AS p WHERE p.product_by LIKE '%${payload.store}%'`;
   db.query(qStr, (err, data) => {
     const findPage = pageHandler / limitHandler;
     let nextpage = findPage + 2;

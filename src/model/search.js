@@ -44,17 +44,17 @@ const getBy = ([productName, category, size, color, limit, page], sortBy, sort, 
       qCstr += qsName;
       urlPage += `name=${url.name}`;
     }
-    if (category !== undefined) {
+    if (category !== 'undefined' && category !== undefined) {
       qStr += qsCategory;
       qCstr += qsCategory;
       urlPage += `&category=${url.category}`;
     }
-    if (size !== undefined) {
+    if (size !== 'undefined' && size !== undefined) {
       qStr += qsSize;
       qCstr += qsSize;
       urlPage += `&size=${url.size}`;
     }
-    if (color !== undefined) {
+    if (color !== 'undefined' && color !== undefined) {
       qStr += qsColor;
       qCstr += qsColor;
       urlPage += `&color=${url.color}`;
@@ -76,7 +76,7 @@ const getBy = ([productName, category, size, color, limit, page], sortBy, sort, 
     });
 
     qStr += ' GROUP BY ps.product_id, pc.product_id';
-    if (sortBy) {
+    if (sortBy !== 'undefined' && sortBy !== undefined) {
       qStr = `${qStr} ORDER BY ${sortBy} ${handlerSort} LIMIT ? OFFSET ?`;
       urlPage += `&sortby=${url.sortby}`;
     } else {

@@ -244,7 +244,7 @@ const getAll = ([limit, page], sortBy, sort) => new Promise((resolve, reject) =>
   }
 
   let qStr = `SELECT 
-  p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, 
+  p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, p.category_id,
   c.category_name, p.product_desc, p.product_sold, p.product_img, p.created_at 
   FROM products AS p JOIN category AS c ON c.id_category = p.category_id`;
 

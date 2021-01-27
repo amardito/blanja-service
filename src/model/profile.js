@@ -1,10 +1,10 @@
+const bcrypt = require('bcrypt');
 const { db } = require('../config/dbConnect');
 
 const upgradeLevel = (payload) => new Promise((resolve, reject) => {
   const payloads = {
     store: payload.store,
     phone: payload.phone,
-    user_email: payload.email,
     level_id: 2,
   };
   const qStr = `UPDATE users SET ? WHERE user_email LIKE '%${payload.email}%'`;
@@ -13,6 +13,60 @@ const upgradeLevel = (payload) => new Promise((resolve, reject) => {
       resolve(data);
     } else {
       reject(err);
+    }
+  });
+});
+
+const changePassword = (payload) => new Promise((resolve, reject) => {
+  const payloads = {
+    user_password: payload.password,
+  };
+  const saltRounds = 10;
+  bcrypt.genSalt(saltRounds, (errSalt, salt) => {
+    if (errSalt) {
+      reject(errSalt);
+    } else {
+      bcrypt.hash(payload.password, salt, (error, hasedPass) => {
+        if (!error) {
+          const newPayloads = { ...payloads, user_password: hasedPass };
+          const qs = `UPDATE users SET ? WHERE user_email LIKE '%${payload.email}%'`;
+          db.query(qs, newPayloads, (e) => {
+            if (e) {
+              reject(e);
+            } else {
+              resolve(payload);
+            }
+          });
+        } else {
+          reject(error);
+        }
+      });
+    }
+  });
+});
+
+const changeUsername = (payload) => new Promise((resolve, reject) => {
+  const payloads = {
+    user_name: payload.username,
+  };
+
+  const qs = `UPDATE users SET ? WHERE user_email LIKE '%${payload.email}%'`;
+  db.query(qs, payloads, (e) => {
+    if (e) {
+      reject(e);
+    } else {
+      resolve(payload);
+    }
+  });
+});
+
+const getUser = (payload) => new Promise((resolve, reject) => {
+  const qs = `SELECT * FROM users WHERE user_email LIKE '%${payload.email}%'`;
+  db.query(qs, (e, data) => {
+    if (e) {
+      reject(e);
+    } else {
+      resolve(data);
     }
   });
 });
@@ -79,5 +133,13 @@ const deleteUserAddress = (param) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
-  upgradeLevel, createAddress, getUserAddress, updateUserAddress, deleteUserAddress, getIdAddress,
+  upgradeLevel,
+  createAddress,
+  getUserAddress,
+  updateUserAddress,
+  deleteUserAddress,
+  getIdAddress,
+  changePassword,
+  changeUsername,
+  getUser,
 };

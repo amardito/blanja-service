@@ -1,6 +1,14 @@
 const wrapper = require('../helper/wrapper');
 const {
-  upgradeLevel, createAddress, getUserAddress, updateUserAddress, deleteUserAddress, getIdAddress,
+  upgradeLevel,
+  createAddress,
+  getUserAddress,
+  updateUserAddress,
+  deleteUserAddress,
+  getIdAddress,
+  changePassword,
+  changeUsername,
+  getUser,
 } = require('../model/profile');
 
 const upgradeProfile = async (req, res) => {
@@ -10,6 +18,30 @@ const upgradeProfile = async (req, res) => {
     if (e.code === 'ER_DUP_ENTRY') {
       wrapper.error(res, 'Conflict Data', `name store for '${req.body.store}' has already taken`, 409);
     }
+  });
+};
+
+const changeUserPassword = async (req, res) => {
+  changePassword(req.body).then(() => {
+    wrapper.success(res, 'Success change', 'successfully change new password', 200);
+  }).catch((e) => {
+    wrapper.error(res, 'Failed change password', e, 400);
+  });
+};
+
+const changeUserName = async (req, res) => {
+  changeUsername(req.body).then(() => {
+    wrapper.success(res, 'Success change', 'successfully change username', 200);
+  }).catch((e) => {
+    wrapper.error(res, 'Failed change username', e, 400);
+  });
+};
+
+const getUserInfo = async (req, res) => {
+  getUser(req.body).then((data) => {
+    wrapper.success(res, 'Success get user info', data, 200);
+  }).catch((e) => {
+    wrapper.error(res, 'Failed get user info', e, 400);
   });
 };
 
@@ -61,9 +93,12 @@ const deleteAddress = async (req, res) => {
 
 module.exports = {
   upgradeProfile,
+  changeUserPassword,
   newAddress,
   userAddress,
   idAddress,
   updateAddress,
   deleteAddress,
+  changeUserName,
+  getUserInfo,
 };

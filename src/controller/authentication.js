@@ -29,6 +29,7 @@ const loginUser = async (req, res) => {
         if (data.cekpassword) {
           wrapper.success(res, 'login success', {
             email: payload.email,
+            id: data.cekemail[0].id_user,
             username: data.cekemail[0].user_name,
             level: data.cekemail[0].level,
             store: data.cekemail[0].store,
@@ -52,6 +53,7 @@ const loginUser = async (req, res) => {
         } else if (data.cekpassword) {
           wrapper.success(res, 'login success', {
             email: payload.email,
+            id: data.cekemail[0].id_user,
             username: data.cekemail[0].user_name,
             level: data.cekemail[0].level,
             store: data.cekemail[0].store,

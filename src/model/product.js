@@ -57,7 +57,7 @@ const getProduct = (payload) => new Promise((resolve, reject) => {
 
   let qStr = `
   SELECT
-      p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty,
+      p.id_product, p.product_name, p.product_by, p.product_price, p.product_qty, u.user_name, u.id_user,
       cat.category_name, p.category_id, p.product_desc, p.product_sold, p.product_img, p.created_at,
       p.updated_at
   FROM
@@ -65,6 +65,9 @@ const getProduct = (payload) => new Promise((resolve, reject) => {
   JOIN category AS cat
   ON
     cat.id_category = p.category_id
+  JOIN users AS u
+  ON
+    u.store = p.product_by
   WHERE
     p.id_product = ?`;
 

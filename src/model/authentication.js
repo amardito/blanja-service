@@ -58,7 +58,7 @@ const register = (payload) => new Promise((resolve, reject) => {
 
 const login = (payload) => new Promise((resolve, reject) => {
   const qStr = `
-  SELECT u.user_name, u.user_password, lv.level, u.store
+  SELECT u.user_name, u.user_password, lv.level, u.store, u.id_user
   FROM users AS u
   JOIN level AS lv
   ON
@@ -97,7 +97,7 @@ const login = (payload) => new Promise((resolve, reject) => {
 
 const login2 = (payload) => new Promise((resolve, reject) => {
   const qStr = `
-  SELECT u.user_name, u.user_password, lv.level, u.store
+  SELECT u.user_name, u.user_password, lv.level, u.store, u.id_user
   FROM users AS u
   JOIN level AS lv
   ON

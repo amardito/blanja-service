@@ -1,9 +1,18 @@
 const { createNewOrder, getUserOrder, getIdOrder } = require('../model/order');
 const wrapper = require('../helper/wrapper');
+const { io } = require('../helper/socket');
 
 const newOrder = async (req, res) => {
   await createNewOrder(req.body).then((data) => {
-    wrapper.success(res, 'Success create new order', data, 201);
+    try {
+      data.arrStore.map((idStore) => io.in(idStore).emit('notification', {
+        title: 'New Order',
+        message: 'Someone has buy your product',
+      }));
+      wrapper.success(res, 'Success create new order', data, 201);
+    } catch (error) {
+      console.log(error);
+    }
   }).catch((err) => {
     wrapper.error(res, 'Failed create new order', err, 400);
   });

@@ -9,6 +9,7 @@ const search = require('./src/routes/search');
 const order = require('./src/routes/order');
 const auth = require('./src/routes/authentication');
 const profile = require('./src/routes/profile');
+const chat = require('./src/routes/chat');
 
 const {
   io, server, app, express, socketConnect,
@@ -31,6 +32,7 @@ app.use(PATH_ENDPOINT, search);
 app.use(PATH_ENDPOINT, order);
 app.use(PATH_ENDPOINT, auth);
 app.use(PATH_ENDPOINT, profile);
+app.use(PATH_ENDPOINT, chat);
 
 app.use('/', routeGate);
 

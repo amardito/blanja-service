@@ -22,23 +22,40 @@ const changePassword = (payload) => new Promise((resolve, reject) => {
     user_password: payload.password,
   };
   const saltRounds = 10;
-  bcrypt.genSalt(saltRounds, (errSalt, salt) => {
-    if (errSalt) {
-      reject(errSalt);
+
+  const qs = `SELECT * FROM users WHERE user_email LIKE '%${payload.email}%'`;
+  db.query(qs, (e, data) => {
+    if (e) {
+      reject(e);
     } else {
-      bcrypt.hash(payload.password, salt, (error, hasedPass) => {
-        if (!error) {
-          const newPayloads = { ...payloads, user_password: hasedPass };
-          const qs = `UPDATE users SET ? WHERE user_email LIKE '%${payload.email}%'`;
-          db.query(qs, newPayloads, (e) => {
-            if (e) {
-              reject(e);
+      bcrypt.compare(payload.old_password, data[0].user_password, (error, result) => {
+        if (error) {
+          reject(error);
+        }
+        if (!result) {
+          resolve(['Wrong Password', 'Password isn\'t match with current password', 404]);
+        } else {
+          bcrypt.genSalt(saltRounds, (errSalt, salt) => {
+            if (errSalt) {
+              reject(errSalt);
             } else {
-              resolve(payload);
+              bcrypt.hash(payload.password, salt, (err, hasedPass) => {
+                if (!err) {
+                  const newPayloads = { ...payloads, user_password: hasedPass };
+                  const qstr = `UPDATE users SET ? WHERE user_email LIKE '%${payload.email}%'`;
+                  db.query(qstr, newPayloads, (Err) => {
+                    if (Err) {
+                      reject(Err);
+                    } else {
+                      resolve(['Success change', 'successfully change new password', 201]);
+                    }
+                  });
+                } else {
+                  reject(err);
+                }
+              });
             }
           });
-        } else {
-          reject(error);
         }
       });
     }

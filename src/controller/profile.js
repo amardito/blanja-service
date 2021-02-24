@@ -22,8 +22,8 @@ const upgradeProfile = async (req, res) => {
 };
 
 const changeUserPassword = async (req, res) => {
-  changePassword(req.body).then(() => {
-    wrapper.success(res, 'Success change', 'successfully change new password', 200);
+  changePassword(req.body).then((data) => {
+    wrapper.success(res, data[0], data[1], data[2]);
   }).catch((e) => {
     wrapper.error(res, 'Failed change password', e, 400);
   });

@@ -18,7 +18,8 @@ const getChatSeller = (payload) => new Promise((resolve, reject) => {
   const qStr = `
   SELECT * FROM chat 
   WHERE receiverID = ${payload} 
-  AND time >= IFNULL((SELECT time FROM chat AS T2 WHERE T2.senderID = chat.senderID ORDER BY time DESC LIMIT 1 OFFSET 0), 0)`;
+  AND time >= IFNULL((SELECT time FROM chat AS T2 WHERE T2.senderID = chat.senderID ORDER BY time DESC LIMIT 1 OFFSET 0), 0)
+  ORDER BY time DESC`;
   db.query(qStr, (err, data) => {
     if (err) {
       reject(err);
